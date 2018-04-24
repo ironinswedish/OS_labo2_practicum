@@ -99,7 +99,6 @@ class Instructie{
 public class main {
 
 	public static void main(String[] args) {
-
 		
 		
 		int pid;

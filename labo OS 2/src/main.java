@@ -13,7 +13,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /*
- * Dit is een testje Joran suckt
+ * Dit is een testje Brian suckt
  */
 
 class Process{
@@ -171,7 +171,7 @@ public class main {
 	}
 	
 	public static void LRU() {
-		
+		//En ohja Joran was altijd al juist
 	}
 	
 }

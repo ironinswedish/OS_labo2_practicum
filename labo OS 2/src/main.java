@@ -188,22 +188,17 @@ public class main {
 	public static void LRULaagstTotaal(){
 		/*
 		 * totale acces time van fragments in proces optellen -> gene met laagste vervangen
-		 * of
+		 * 
 		 * 
 		 */
 	}
 	public static void LRULaagsteFragments(int aantalProc){
 		/*
-		 * kijken naar aantal fragments van ieder proces
-		 * =>frag hoog -> meeste verwijderen
-		 * of
 		 * de 2^(3-n) fragments met laagste accesTime uit ram halen
 		 */
 	}
 	public static void LRUReadWrite(){
 		/*
-		 * fragment met laagste accesTime
-		 * of
 		 * fragment met laagste accesTime dat van proces zelf is
 		 */
 	}

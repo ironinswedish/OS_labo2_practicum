@@ -12,19 +12,15 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-/*
- * Dit is een testje Brian suckt
- */
-
-class Process{
+class Process {
 	int pid;
 	List<TablePageEntry> pageTable;
-	
+
 	public Process(int p) {
-		pid=p;
-		pageTable= new ArrayList<TablePageEntry>();
+		pid = p;
+		pageTable = new ArrayList<TablePageEntry>();
 		TablePageEntry t;
-		for(int a=0;a<15;a++) {
+		for (int a = 0; a < 15; a++) {
 			pageTable.add(new TablePageEntry());
 
 		}
@@ -36,17 +32,17 @@ class TablePageEntry {
 	int modifyBit;
 	int lastAccesTime;
 	int frameNummer;
-	
+
 	public TablePageEntry() {
-		presentBit=0;
-		modifyBit=0;
+		presentBit = 0;
+		modifyBit = 0;
 	}
-	
+
 	public TablePageEntry(int p, int m, int l, int f) {
-		presentBit=p;
-		modifyBit=m;
-		lastAccesTime=l;
-		frameNummer=f;
+		presentBit = p;
+		modifyBit = m;
+		lastAccesTime = l;
+		frameNummer = f;
 	}
 
 	public int getPresentBit() {
@@ -82,40 +78,40 @@ class TablePageEntry {
 	}
 }
 
-class Instructie{
+class Instructie {
 	String operation;
 	int pid;
 	int adress;
-	
+
 	public Instructie() {
 	}
-	
-	public Instructie(int a,String o,int b) {
-		a=pid;
-		operation=o;
-		adress=b;
+
+	public Instructie(int a, String o, int b) {
+		a = pid;
+		operation = o;
+		adress = b;
 	}
-	
+
 }
 
 public class main {
 
 	public static void main(String[] args) {
-		
+
 		int pid;
 		String at;
 		int st;
 		Instructie p;
 		List<Instructie> instructielijst = new ArrayList<Instructie>();
-		
-		Map<String,Runnable> functies = new HashMap<String,Runnable>();
-		functies.put("Start", ()->doeStart());
-		functies.put("Read", ()->doeRead());
-		functies.put("Write", ()->doeWrite());
-		functies.put("Terminate", ()->doeTerminate());
-		
-		int [] RAM = new int [12];
-		
+
+		Map<String, Runnable> functies = new HashMap<String, Runnable>();
+		functies.put("Start", () -> doeStart());
+		functies.put("Read", () -> doeRead());
+		functies.put("Write", () -> doeWrite());
+		functies.put("Terminate", () -> doeTerminate());
+
+		int[] RAM = new int[12];
+
 		try {
 
 			File fXmlFile = new File("Instructions_30_3.xml");
@@ -142,19 +138,19 @@ public class main {
 					pid = Integer.parseInt(eElement.getElementsByTagName("processID").item(0).getTextContent());
 					at = eElement.getElementsByTagName("operation").item(0).getTextContent();
 					st = Integer.parseInt(eElement.getElementsByTagName("address").item(0).getTextContent());
-					
-					p=new Instructie(pid,at,st);
-					
+
+					p = new Instructie(pid, at, st);
+
 					functies.get(at).run();
 				}
 			}
-		
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 	}
-	
+
 	public static void doeStart() {
 		System.out.println("Ik doe start");
 	}
@@ -166,12 +162,53 @@ public class main {
 	public static void doeWrite() {
 		System.out.println("Ik doe write");
 	}
+
 	public static void doeTerminate() {
 		System.out.println("Ik doe terminate");
 	}
-	
-	public static void LRU() {
-		//En ohja Joran was altijd al juist
+
+	public static void LRUStart() {
+		
+		System.out.println("LRU");
+		/*
+		 * 4 processen in ram -> 1 proces verwijderen
+		 * => met laagste totale acces Time
+		 * 0-3 processen 
+		 * => per proces de 2^(3-n) met laagste acces Time
+		 */
+		int aantalProc = aantalProcInRam();
+		if(aantalProc==4){
+			LRULaagstTotaal();
+		}
+		else {
+			LRULaagsteFragments(aantalProc);
+		}
 	}
 	
+	public static void LRULaagstTotaal(){
+		/*
+		 * totale acces time van fragments in proces optellen -> gene met laagste vervangen
+		 * of
+		 * 
+		 */
+	}
+	public static void LRULaagsteFragments(int aantalProc){
+		/*
+		 * kijken naar aantal fragments van ieder proces
+		 * =>frag hoog -> meeste verwijderen
+		 * of
+		 * de 2^(3-n) fragments met laagste accesTime uit ram halen
+		 */
+	}
+	public static void LRUReadWrite(){
+		/*
+		 * fragment met laagste accesTime
+		 * of
+		 * fragment met laagste accesTime dat van proces zelf is
+		 */
+	}
+
+	public static int aantalProcInRam(){
+		return 1;
+	}
 }

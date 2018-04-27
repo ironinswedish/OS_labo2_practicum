@@ -15,6 +15,7 @@ import org.w3c.dom.NodeList;
 class Process {
 	int pid;
 	List<TablePageEntry> pageTable;
+	int gealloceerd;
 
 	public Process(int p) {
 		pid = p;
@@ -94,13 +95,17 @@ class Instructie {
 
 }
 
+class toestand{
+	int shrijf;
+}
+
 public class main {
 
 	public static void main(String[] args) {
 
 		int pid;
 		String at;
-		int st;
+		int adres;
 		Instructie p;
 		List<Instructie> instructielijst = new ArrayList<Instructie>();
 
@@ -137,9 +142,9 @@ public class main {
 
 					pid = Integer.parseInt(eElement.getElementsByTagName("processID").item(0).getTextContent());
 					at = eElement.getElementsByTagName("operation").item(0).getTextContent();
-					st = Integer.parseInt(eElement.getElementsByTagName("address").item(0).getTextContent());
+					adres = Integer.parseInt(eElement.getElementsByTagName("address").item(0).getTextContent());
 
-					p = new Instructie(pid, at, st);
+					p = new Instructie(pid, at, adres);
 
 					functies.get(at).run();
 				}

@@ -96,7 +96,30 @@ class Instructie {
 }
 
 class toestand{
-	int shrijf;
+
+
+	int shrijfopdracht;
+	int clock;
+	String instructie;
+	int adres;
+	int reeelAdres;
+	int frame;
+	int offset;
+	Ram ram;
+	List<Process> aanwezigeProcessen;
+	
+	public toestand(int shrijfopdracht, int clock, String instructie, int adres, int reeelAdres, Ram ram,
+			List<Process> aanwezigeProcessen) {
+		this.shrijfopdracht = shrijfopdracht;
+		this.clock = clock;
+		this.instructie = instructie;
+		this.adres = adres;
+		this.reeelAdres = reeelAdres;
+		this.ram = ram;
+		this.aanwezigeProcessen = aanwezigeProcessen;
+	}
+	
+	
 }
 
 class Ram{
@@ -128,12 +151,14 @@ class Ram{
 public class main {
 	static Ram RAM = new Ram();
 	static List<Process> processenlijst = new ArrayList<Process>();
+	static int clock;
+	static int pid;
+	static int adres;
+	static int schrijfopdracht;
 	
 	public static void main(String[] args) {
-
-		int pid;
+		
 		String at;
-		int adres;
 		Instructie p;
 		List<Instructie> instructielijst = new ArrayList<Instructie>();
 

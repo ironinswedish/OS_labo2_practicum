@@ -27,16 +27,18 @@ import javafx.stage.Stage;
 public class main extends Application {
 	static Ram RAM = new Ram();
 	static List<Process> processenlijst = new ArrayList<Process>();
-	static int clock;
+	static int clock =0;
 	static int adres;
 	static int schrijfopdracht;
 	static int pid = 0;
+	static ArrayList<Toestand> toestandenLijst = new ArrayList<Toestand>();
+	static List<Instructie> instructielijst = new ArrayList<Instructie>();
+	static int huidigeInst;
 
 	public static void main(String[] args) {
 
 		String at;
 		Instructie p;
-		List<Instructie> instructielijst = new ArrayList<Instructie>();
 
 		Map<String, Runnable> functies = new HashMap<String, Runnable>();
 		functies.put("Start", () -> doeStart());
@@ -73,8 +75,14 @@ public class main extends Application {
 
 					p = new Instructie(pid, at, adres);
 					instructielijst.add(p);
-					functies.get(at).run();
+
 				}
+			}
+
+			for (int i = 0; i < instructielijst.size(); i++) {
+				huidigeInst = i;
+				functies.get(instructielijst.get(i).operation).run();
+				clock++;
 			}
 
 		} catch (Exception e) {
@@ -97,6 +105,7 @@ public class main extends Application {
 
 	public void vooruitEen(ActionEvent event) {
 		System.out.println("test");
+		System.out.println(toestandenLijst.size());
 	}
 
 	public void vooruitAlles(ActionEvent event) {
@@ -127,6 +136,10 @@ public class main extends Application {
 		System.out.println("LRU");
 
 		RAM.nieuwProcess(pid, processenlijst);
+		
+		
+		voegToestandToe();
+		
 
 		/*
 		 * 4 processen in ram -> 1 proces verwijderen => met laagste totale
@@ -134,6 +147,23 @@ public class main extends Application {
 		 * Time
 		 */
 
+	}
+	
+	public static void voegToestandToe(){
+		Instructie inst = instructielijst.get(huidigeInst);
+		List<Process> aanwezigeProc = new ArrayList<Process>();
+		for (int j=0; j<RAM.processen.length; j++){
+			aanwezigeProc.add(processenlijst.get(RAM.processen[j]));
+		}
+		Toestand toestand = null;
+		if (huidigeInst < instructielijst.size() - 1) {
+			toestand = new Toestand(0, clock, inst.operation, inst.adress, instructielijst.get(huidigeInst + 1).adress,
+					new Ram(RAM),aanwezigeProc);
+		} else {
+			toestand = new Toestand(0, 1, inst.operation, inst.adress, 0,
+					RAM,aanwezigeProc);
+		}
+		toestandenLijst.add(toestand);
 	}
 
 	public static void LRULaagstTotaal() {
@@ -190,7 +220,6 @@ class Process {
 		}
 		return max;
 	}
-
 
 	public List<Integer> verwijderFrames(int aantal) {
 		List<Integer> vrijgekomenPlaatsen = new ArrayList<Integer>();
@@ -257,9 +286,7 @@ class Process {
 	public void addFrame(Integer integer) {
 		framenummers.add(integer);
 
-		
 	}
-
 
 }
 
@@ -339,26 +366,124 @@ class Instructie {
 
 }
 
-class toestand {
+class Toestand {
 
 	int shrijfopdracht;
 	int clock;
 	String instructie;
-	int adres;
-	int reeelAdres;
+	int huidigAdres;
+	int huidigReeelAdres;
+	int volgendAdres;
+	int volgendReeelAdres;
 	int frame;
 	int offset;
 	Ram ram;
 	List<Process> aanwezigeProcessen;
 
-	public toestand(int shrijfopdracht, int clock, String instructie, int adres, int reeelAdres, Ram ram,
+	public Toestand() {
+
+	}
+
+	public Toestand(int shrijfopdracht, int clock, String instr, int hAdres, int vAdres, Ram ram,
 			List<Process> aanwezigeProcessen) {
 		this.shrijfopdracht = shrijfopdracht;
 		this.clock = clock;
-		this.instructie = instructie;
-		this.adres = adres;
-		this.reeelAdres = reeelAdres;
+		this.huidigAdres = hAdres;
+		this.instructie = instr;
+		this.frame = (int) Math.floor(hAdres/Math.pow(2, 12));
+		this.offset = (int) ((hAdres/Math.pow(2, 12)-frame)*Math.pow(2, 12));
+		this.volgendAdres = vAdres;
+		this.frame = (int) Math.floor(vAdres/Math.pow(2, 12));
+		this.offset = (int) ((vAdres/Math.pow(2, 12)-frame)*Math.pow(2, 12));
 		this.ram = ram;
+		this.aanwezigeProcessen = aanwezigeProcessen;
+	}
+
+	public int getShrijfopdracht() {
+		return shrijfopdracht;
+	}
+
+	public void setShrijfopdracht(int shrijfopdracht) {
+		this.shrijfopdracht = shrijfopdracht;
+	}
+
+	public int getClock() {
+		return clock;
+	}
+
+	public void setClock(int clock) {
+		this.clock = clock;
+	}
+
+	public String getInstructie() {
+		return instructie;
+	}
+
+	public void setInstructie(String instructie) {
+		this.instructie = instructie;
+	}
+
+	public int getHuidigAdres() {
+		return huidigAdres;
+	}
+
+	public void setHuidigAdres(int huidigAdres) {
+		this.huidigAdres = huidigAdres;
+	}
+
+	public int getHuidigReeelAdres() {
+		return huidigReeelAdres;
+	}
+
+	public void setHuidigReeelAdres(int huidigReeelAdres) {
+		this.huidigReeelAdres = huidigReeelAdres;
+	}
+
+	public int getVolgendAdres() {
+		return volgendAdres;
+	}
+
+	public void setVolgendAdres(int volgendAdres) {
+		this.volgendAdres = volgendAdres;
+	}
+
+	public int getVolgendReeelAdres() {
+		return volgendReeelAdres;
+	}
+
+	public void setVolgendReeelAdres(int volgendReeelAdres) {
+		this.volgendReeelAdres = volgendReeelAdres;
+	}
+
+	public int getFrame() {
+		return frame;
+	}
+
+	public void setFrame(int frame) {
+		this.frame = frame;
+	}
+
+	public int getOffset() {
+		return offset;
+	}
+
+	public void setOffset(int offset) {
+		this.offset = offset;
+	}
+
+	public Ram getRam() {
+		return ram;
+	}
+
+	public void setRam(Ram ram) {
+		this.ram = ram;
+	}
+
+	public List<Process> getAanwezigeProcessen() {
+		return aanwezigeProcessen;
+	}
+
+	public void setAanwezigeProcessen(List<Process> aanwezigeProcessen) {
 		this.aanwezigeProcessen = aanwezigeProcessen;
 	}
 
@@ -368,11 +493,19 @@ class Ram {
 	int aantalProc;
 	int[] processen;
 	Set<Integer> processenIds = new HashSet<Integer>();
+	
 
 	public Ram() {
 		processen = new int[12];
 		aantalProc = 0;
 	}
+	
+	public Ram(Ram ram){
+		aantalProc=ram.aantalProc;
+		processen = ram.processen;
+		processenIds=ram.processenIds;
+	}
+	
 
 	public void nieuwProcess(int id, List<Process> processenlijst) {
 		if (aantalProc == 4) {
@@ -447,12 +580,12 @@ class Ram {
 		for (Integer i : processenIds) {
 			for (int a = 0; a < 12 / ((aantalProc + 1) * aantalProc); a++) {
 				processenlijst.get(i).addFrame(vrijgekomenFrames.get(0));
-				processen[vrijgekomenFrames.get(0)]=i;
+				processen[vrijgekomenFrames.get(0)] = i;
 				vrijgekomenFrames.remove(vrijgekomenFrames.get(0));
 			}
 		}
 		processenlijst.get(pid).removeOutOfRam();
-		//SchrijvenNaarPersistentGeheugen++
+		// SchrijvenNaarPersistentGeheugen++
 
 	}
 }

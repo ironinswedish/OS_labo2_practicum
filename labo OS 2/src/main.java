@@ -128,7 +128,10 @@ public class main extends Application {
 	}
 
 	public static void doeTerminate() {
+<<<<<<< HEAD
 		RAM.verwijderProcess(pid,processenlijst);
+=======
+>>>>>>> refs/remotes/origin/master
 		System.out.println("Ik doe terminate");
 	}
 

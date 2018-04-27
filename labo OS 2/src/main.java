@@ -17,6 +17,181 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+
+public class main extends Application {
+	static Ram RAM = new Ram();
+	static List<Process> processenlijst = new ArrayList<Process>();
+	static int clock =0;
+	static int adres;
+	static int schrijfopdracht;
+	static int pid = 0;
+	static ArrayList<Toestand> toestandenLijst = new ArrayList<Toestand>();
+	static List<Instructie> instructielijst = new ArrayList<Instructie>();
+	static int huidigeInst;
+
+	public static void main(String[] args) {
+
+		String at;
+		Instructie p;
+
+		Map<String, Runnable> functies = new HashMap<String, Runnable>();
+		functies.put("Start", () -> doeStart());
+		functies.put("Read", () -> doeRead());
+		functies.put("Write", () -> doeWrite());
+		functies.put("Terminate", () -> doeTerminate());
+
+		try {
+
+			File fXmlFile = new File("Instructions_30_3.xml");
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(fXmlFile);
+
+			doc.getDocumentElement().normalize();
+
+			System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
+
+			NodeList nList = doc.getElementsByTagName("instruction");
+
+			System.out.println("----------------------------");
+
+			for (int temp = 0; temp < nList.getLength(); temp++) {
+
+				Node nNode = nList.item(temp);
+
+				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+
+					Element eElement = (Element) nNode;
+
+					pid = Integer.parseInt(eElement.getElementsByTagName("processID").item(0).getTextContent());
+					at = eElement.getElementsByTagName("operation").item(0).getTextContent();
+					adres = Integer.parseInt(eElement.getElementsByTagName("address").item(0).getTextContent());
+
+					p = new Instructie(pid, at, adres);
+					instructielijst.add(p);
+
+				}
+			}
+
+			for (int i = 0; i < instructielijst.size(); i++) {
+				huidigeInst = i;
+				functies.get(instructielijst.get(i).operation).run();
+				clock++;
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		launch(args);
+
+	}
+
+	@Override
+	public void start(Stage stage) throws Exception {
+		Parent root = FXMLLoader.load(getClass().getResource("Scheduling_User_Interface.fxml"));
+
+		Scene scene = new Scene(root, 300, 275);
+
+		stage.setTitle("FXML Welcome");
+		stage.setScene(scene);
+		stage.show();
+	}
+
+	public void vooruitEen(ActionEvent event) {
+		System.out.println("test");
+		System.out.println(toestandenLijst.size());
+	}
+
+	public void vooruitAlles(ActionEvent event) {
+		System.out.println("test 2");
+	}
+
+	public static void doeStart() {
+		Process p = new Process(pid);
+		processenlijst.add(pid, p);
+		LRUStart();
+		System.out.println("Ik doe start");
+	}
+
+	public static void doeRead() {
+		System.out.println("Ik doe read");
+	}
+
+	public static void doeWrite() {
+		System.out.println("Ik doe write");
+	}
+
+	public static void doeTerminate() {
+		System.out.println("Ik doe terminate");
+	}
+
+	public static void LRUStart() {
+
+		System.out.println("LRU");
+
+		RAM.nieuwProcess(pid, processenlijst);
+		
+		
+		voegToestandToe();
+		
+
+		/*
+		 * 4 processen in ram -> 1 proces verwijderen => met laagste totale
+		 * acces Time 0-3 processen => per proces de 2^(3-n) met laagste acces
+		 * Time
+		 */
+
+	}
+	
+	public static void voegToestandToe(){
+		Instructie inst = instructielijst.get(huidigeInst);
+		List<Process> aanwezigeProc = new ArrayList<Process>();
+		for (int j=0; j<RAM.processen.length; j++){
+			aanwezigeProc.add(processenlijst.get(RAM.processen[j]));
+		}
+		Toestand toestand = null;
+		if (huidigeInst < instructielijst.size() - 1) {
+			toestand = new Toestand(0, clock, inst.operation, inst.adress, instructielijst.get(huidigeInst + 1).adress,
+					new Ram(RAM),aanwezigeProc);
+		} else {
+			toestand = new Toestand(0, 1, inst.operation, inst.adress, 0,
+					RAM,aanwezigeProc);
+		}
+		toestandenLijst.add(toestand);
+	}
+
+	public static void LRULaagstTotaal() {
+		/*
+		 * totale acces time van fragments in proces optellen -> gene met
+		 * laagste vervangen
+		 * 
+		 * 
+		 */
+	}
+
+	public static void LRULaagsteFragments(int aantalProc) {
+		/*
+		 * de 2^(3-n) fragments met laagste accesTime uit ram halen
+		 */
+	}
+
+	public static void LRUReadWrite() {
+		/*
+		 * fragment met laagste accesTime dat van proces zelf is
+		 */
+	}
+
+	public static int aantalProcInRam() {
+		return 1;
+	}
+}
+
 class Process {
 	int pid;
 	List<TablePageEntry> pageTable;
@@ -110,7 +285,7 @@ class Process {
 
 	public void addFrame(Integer integer) {
 		framenummers.add(integer);
-		
+
 	}
 
 }
@@ -191,26 +366,124 @@ class Instructie {
 
 }
 
-class toestand {
+class Toestand {
 
 	int shrijfopdracht;
 	int clock;
 	String instructie;
-	int adres;
-	int reeelAdres;
+	int huidigAdres;
+	int huidigReeelAdres;
+	int volgendAdres;
+	int volgendReeelAdres;
 	int frame;
 	int offset;
 	Ram ram;
 	List<Process> aanwezigeProcessen;
 
-	public toestand(int shrijfopdracht, int clock, String instructie, int adres, int reeelAdres, Ram ram,
+	public Toestand() {
+
+	}
+
+	public Toestand(int shrijfopdracht, int clock, String instr, int hAdres, int vAdres, Ram ram,
 			List<Process> aanwezigeProcessen) {
 		this.shrijfopdracht = shrijfopdracht;
 		this.clock = clock;
-		this.instructie = instructie;
-		this.adres = adres;
-		this.reeelAdres = reeelAdres;
+		this.huidigAdres = hAdres;
+		this.instructie = instr;
+		this.frame = (int) Math.floor(hAdres/Math.pow(2, 12));
+		this.offset = (int) ((hAdres/Math.pow(2, 12)-frame)*Math.pow(2, 12));
+		this.volgendAdres = vAdres;
+		this.frame = (int) Math.floor(vAdres/Math.pow(2, 12));
+		this.offset = (int) ((vAdres/Math.pow(2, 12)-frame)*Math.pow(2, 12));
 		this.ram = ram;
+		this.aanwezigeProcessen = aanwezigeProcessen;
+	}
+
+	public int getShrijfopdracht() {
+		return shrijfopdracht;
+	}
+
+	public void setShrijfopdracht(int shrijfopdracht) {
+		this.shrijfopdracht = shrijfopdracht;
+	}
+
+	public int getClock() {
+		return clock;
+	}
+
+	public void setClock(int clock) {
+		this.clock = clock;
+	}
+
+	public String getInstructie() {
+		return instructie;
+	}
+
+	public void setInstructie(String instructie) {
+		this.instructie = instructie;
+	}
+
+	public int getHuidigAdres() {
+		return huidigAdres;
+	}
+
+	public void setHuidigAdres(int huidigAdres) {
+		this.huidigAdres = huidigAdres;
+	}
+
+	public int getHuidigReeelAdres() {
+		return huidigReeelAdres;
+	}
+
+	public void setHuidigReeelAdres(int huidigReeelAdres) {
+		this.huidigReeelAdres = huidigReeelAdres;
+	}
+
+	public int getVolgendAdres() {
+		return volgendAdres;
+	}
+
+	public void setVolgendAdres(int volgendAdres) {
+		this.volgendAdres = volgendAdres;
+	}
+
+	public int getVolgendReeelAdres() {
+		return volgendReeelAdres;
+	}
+
+	public void setVolgendReeelAdres(int volgendReeelAdres) {
+		this.volgendReeelAdres = volgendReeelAdres;
+	}
+
+	public int getFrame() {
+		return frame;
+	}
+
+	public void setFrame(int frame) {
+		this.frame = frame;
+	}
+
+	public int getOffset() {
+		return offset;
+	}
+
+	public void setOffset(int offset) {
+		this.offset = offset;
+	}
+
+	public Ram getRam() {
+		return ram;
+	}
+
+	public void setRam(Ram ram) {
+		this.ram = ram;
+	}
+
+	public List<Process> getAanwezigeProcessen() {
+		return aanwezigeProcessen;
+	}
+
+	public void setAanwezigeProcessen(List<Process> aanwezigeProcessen) {
 		this.aanwezigeProcessen = aanwezigeProcessen;
 	}
 
@@ -220,11 +493,19 @@ class Ram {
 	int aantalProc;
 	int[] processen;
 	Set<Integer> processenIds = new HashSet<Integer>();
+	
 
 	public Ram() {
 		processen = new int[12];
 		aantalProc = 0;
 	}
+	
+	public Ram(Ram ram){
+		aantalProc=ram.aantalProc;
+		processen = ram.processen;
+		processenIds=ram.processenIds;
+	}
+	
 
 	public void nieuwProcess(int id, List<Process> processenlijst) {
 		if (aantalProc == 4) {
@@ -299,130 +580,12 @@ class Ram {
 		for (Integer i : processenIds) {
 			for (int a = 0; a < 12 / ((aantalProc + 1) * aantalProc); a++) {
 				processenlijst.get(i).addFrame(vrijgekomenFrames.get(0));
-				processen[vrijgekomenFrames.get(0)]=i;
+				processen[vrijgekomenFrames.get(0)] = i;
 				vrijgekomenFrames.remove(vrijgekomenFrames.get(0));
 			}
 		}
 		processenlijst.get(pid).removeOutOfRam();
-		//SchrijvenNaarPersistentGeheugen++
+		// SchrijvenNaarPersistentGeheugen++
 
-	}
-}
-
-public class main {
-	static Ram RAM = new Ram();
-	static List<Process> processenlijst = new ArrayList<Process>();
-	static int clock;
-	static int adres;
-	static int schrijfopdracht;
-	static int pid = 0;
-
-	public static void main(String[] args) {
-
-		String at;
-		Instructie p;
-		List<Instructie> instructielijst = new ArrayList<Instructie>();
-
-		Map<String, Runnable> functies = new HashMap<String, Runnable>();
-		functies.put("Start", () -> doeStart());
-		functies.put("Read", () -> doeRead());
-		functies.put("Write", () -> doeWrite());
-		functies.put("Terminate", () -> doeTerminate());
-
-		try {
-
-			File fXmlFile = new File("Instructions_30_3.xml");
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(fXmlFile);
-
-			doc.getDocumentElement().normalize();
-
-			System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
-
-			NodeList nList = doc.getElementsByTagName("instruction");
-
-			System.out.println("----------------------------");
-
-			for (int temp = 0; temp < nList.getLength(); temp++) {
-
-				Node nNode = nList.item(temp);
-
-				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-
-					Element eElement = (Element) nNode;
-
-					pid = Integer.parseInt(eElement.getElementsByTagName("processID").item(0).getTextContent());
-					at = eElement.getElementsByTagName("operation").item(0).getTextContent();
-					adres = Integer.parseInt(eElement.getElementsByTagName("address").item(0).getTextContent());
-
-					p = new Instructie(pid, at, adres);
-					instructielijst.add(p);
-					functies.get(at).run();
-				}
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	public static void doeStart() {
-		Process p = new Process(pid);
-		processenlijst.add(pid, p);
-		LRUStart();
-		System.out.println("Ik doe start");
-	}
-
-	public static void doeRead() {
-		System.out.println("Ik doe read");
-	}
-
-	public static void doeWrite() {
-		System.out.println("Ik doe write");
-	}
-
-	public static void doeTerminate() {
-		RAM.verwijderProcess(pid,processenlijst);
-		System.out.println("Ik doe terminate");
-	}
-
-	public static void LRUStart() {
-
-		System.out.println("LRU");
-
-		RAM.nieuwProcess(pid, processenlijst);
-
-		/*
-		 * 4 processen in ram -> 1 proces verwijderen => met laagste totale acces Time
-		 * 0-3 processen => per proces de 2^(3-n) met laagste acces Time
-		 */
-
-	}
-
-	public static void LRULaagstTotaal() {
-		/*
-		 * totale acces time van fragments in proces optellen -> gene met laagste
-		 * vervangen
-		 * 
-		 * 
-		 */
-	}
-
-	public static void LRULaagsteFragments(int aantalProc) {
-		/*
-		 * de 2^(3-n) fragments met laagste accesTime uit ram halen
-		 */
-	}
-
-	public static void LRUReadWrite() {
-		/*
-		 * fragment met laagste accesTime dat van proces zelf is
-		 */
-	}
-
-	public static int aantalProcInRam() {
-		return 1;
 	}
 }

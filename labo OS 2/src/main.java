@@ -39,31 +39,31 @@ class Process {
 	public int getMaxAccesTime() {
 		int max = 0;
 		for (TablePageEntry tpe : pageTable) {
-			if (tpe.getLastAccesTime() > max && tpe.getPresentBit()==1) {
-				max=tpe.getLastAccesTime();
+			if (tpe.getLastAccesTime() > max && tpe.getPresentBit() == 1) {
+				max = tpe.getLastAccesTime();
 			}
 		}
 		return max;
 	}
-	
+
 	public List<Integer> verwijderFrames(int aantal) {
 		List<Integer> vrijgekomenPlaatsen = new ArrayList<Integer>();
 		Comparator<TablePageEntry> ATcomp = new AccesTimeComparator();
-		
-		//Alle pageEntries die in het RAM zitten in de priorityqueue steken.
-		//Vervolgens de eerste 'aantal' pages van deze queue eruit halen
-		//Stel lijst te klein, kiezen voor random idle frames weg te geven.
+
+		// Alle pageEntries die in het RAM zitten in de priorityqueue steken.
+		// Vervolgens de eerste 'aantal' pages van deze queue eruit halen
+		// Stel lijst te klein, kiezen voor random idle frames weg te geven.
 		PriorityQueue<TablePageEntry> ATqueue = new PriorityQueue<TablePageEntry>(16, ATcomp);
-		
-		for(TablePageEntry tpe: pageTable) {
-			if(tpe.getPresentBit()==1) {
+
+		for (TablePageEntry tpe : pageTable) {
+			if (tpe.getPresentBit() == 1) {
 				ATqueue.add(tpe);
 			}
 		}
-		int verwijderd=0;
-		int aantalOver=0;
-		for(int a=0;a<aantal;a++) {
-			if(!ATqueue.isEmpty()) {
+		int verwijderd = 0;
+		int aantalOver = 0;
+		for (int a = 0; a < aantal; a++) {
+			if (!ATqueue.isEmpty()) {
 				ATqueue.peek().setPresentBit(0);
 				ATqueue.peek().setModifyBit(0);
 				framenummers.remove(ATqueue.peek().getFrameNummer());
@@ -72,46 +72,53 @@ class Process {
 				verwijderd++;
 			}
 		}
-		aantalOver=aantal-verwijderd;
-		for(Integer i:framenummers) {
-			if(aantalOver>0) {
+		aantalOver = aantal - verwijderd;
+		for (Integer i : framenummers) {
+			if (aantalOver > 0) {
 				vrijgekomenPlaatsen.add(i);
 				framenummers.remove(i);
 				aantalOver--;
+			} else {
+				break;
 			}
-			else {break;}
 		}
 		return vrijgekomenPlaatsen;
-		
+
 	}
-	
+
 	public List<Integer> removeOutOfRam() {
 		List<Integer> lijst = new ArrayList<Integer>();
-		for(TablePageEntry tpe:pageTable) {
-			if(tpe.getFrameNummer()!=-1) {lijst.add(tpe.getFrameNummer());}
+		for (TablePageEntry tpe : pageTable) {
+			if (tpe.getFrameNummer() != -1) {
+				lijst.add(tpe.getFrameNummer());
+			}
 			tpe.setFrameNummer(-1);
 			tpe.setPresentBit(0);
 			tpe.setModifyBit(0);
-			//SchrijfOpdrachtenVerhoogd
+			// SchrijfOpdrachtenVerhoogd
 		}
 		return lijst;
 	}
 
 	public void getInRam(List<Integer> lijst) {
 		framenummers = new HashSet<Integer>();
-		for(Integer i: lijst) {
+		for (Integer i : lijst) {
 			framenummers.add(i);
 		}
-		
+
+	}
+
+	public void addFrame(Integer integer) {
+		framenummers.add(integer);
 		
 	}
-	
+
 }
 
-class AccesTimeComparator implements Comparator<TablePageEntry>{
+class AccesTimeComparator implements Comparator<TablePageEntry> {
 	@Override
 	public int compare(TablePageEntry o1, TablePageEntry o2) {
-		return o1.getLastAccesTime()-o2.getLastAccesTime();
+		return o1.getLastAccesTime() - o2.getLastAccesTime();
 	}
 }
 
@@ -122,8 +129,8 @@ class TablePageEntry {
 	int frameNummer;
 
 	public TablePageEntry() {
-		frameNummer=-1;
-		lastAccesTime=-1;
+		frameNummer = -1;
+		lastAccesTime = -1;
 		presentBit = 0;
 		modifyBit = 0;
 	}
@@ -184,8 +191,7 @@ class Instructie {
 
 }
 
-class toestand{
-
+class toestand {
 
 	int shrijfopdracht;
 	int clock;
@@ -196,7 +202,7 @@ class toestand{
 	int offset;
 	Ram ram;
 	List<Process> aanwezigeProcessen;
-	
+
 	public toestand(int shrijfopdracht, int clock, String instructie, int adres, int reeelAdres, Ram ram,
 			List<Process> aanwezigeProcessen) {
 		this.shrijfopdracht = shrijfopdracht;
@@ -207,8 +213,7 @@ class toestand{
 		this.ram = ram;
 		this.aanwezigeProcessen = aanwezigeProcessen;
 	}
-	
-	
+
 }
 
 class Ram {
@@ -226,43 +231,41 @@ class Ram {
 			int laagsteClock = 100000000;
 			int pid = 0;
 			for (Integer i : processenIds) {
-				if(processenlijst.get(i).getMaxAccesTime()<laagsteClock) {
-					pid=i;
-					laagsteClock= processenlijst.get(i).getMaxAccesTime();
+				if (processenlijst.get(i).getMaxAccesTime() < laagsteClock) {
+					pid = i;
+					laagsteClock = processenlijst.get(i).getMaxAccesTime();
 				}
 			}
 			processenIds.remove(pid);
 			processenIds.add(id);
-			List<Integer>lijst =processenlijst.get(pid).removeOutOfRam();
+			List<Integer> lijst = processenlijst.get(pid).removeOutOfRam();
 			processenlijst.get(id).getInRam(lijst);
-			
-			for(Integer i:lijst) {
-				processen[i]=id;
+
+			for (Integer i : lijst) {
+				processen[i] = id;
 			}
-			
-		}
-		else if(aantalProc==0) {
+
+		} else if (aantalProc == 0) {
 			List<Integer> alleFrames = new ArrayList<Integer>();
-			alleFrames.addAll(Arrays.asList(0,1, 2, 3, 4, 5,6,7,8,9,10,11));
+			alleFrames.addAll(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11));
 			processenlijst.get(id).getInRam(alleFrames);
-			for(int a=0;a<12;a++) {
-				processen[a]=id;
+			for (int a = 0; a < 12; a++) {
+				processen[a] = id;
 			}
 			aantalProc++;
-		}
-		else {
+		} else {
 			List<Integer> vrijgekomenFrames = new ArrayList<Integer>();
-			int teVerwijderenPerProcess = (12/aantalProc - 12/(aantalProc+1));
-			for(Integer i: processenIds) {
+			int teVerwijderenPerProcess = (12 / aantalProc - 12 / (aantalProc + 1));
+			for (Integer i : processenIds) {
 				vrijgekomenFrames.addAll(processenlijst.get(i).verwijderFrames(teVerwijderenPerProcess));
-				
+
 			}
-			for(Integer i:vrijgekomenFrames) {
-				processen[i]=id;
+			for (Integer i : vrijgekomenFrames) {
+				processen[i] = id;
 			}
-			
-		processenlijst.get(id).getInRam(vrijgekomenFrames);
-		aantalProc++;	
+
+			processenlijst.get(id).getInRam(vrijgekomenFrames);
+			aantalProc++;
 		}
 	}
 
@@ -280,6 +283,29 @@ class Ram {
 
 	public void setProcessen(int[] processen) {
 		this.processen = processen;
+	}
+
+	public void verwijderProcess(int pid, List<Process> processenlijst) {
+		List<Integer> vrijgekomenFrames = new ArrayList<Integer>();
+		for (int a = 0; a < 12; a++) {
+			if (processen[a] == pid) {
+				processen[a] = -1;
+				vrijgekomenFrames.add(a);
+			}
+		}
+		aantalProc--;
+		processenIds.remove(pid);
+
+		for (Integer i : processenIds) {
+			for (int a = 0; a < 12 / ((aantalProc + 1) * aantalProc); a++) {
+				processenlijst.get(i).addFrame(vrijgekomenFrames.get(0));
+				processen[vrijgekomenFrames.get(0)]=i;
+				vrijgekomenFrames.remove(vrijgekomenFrames.get(0));
+			}
+		}
+		processenlijst.get(pid).removeOutOfRam();
+		//SchrijvenNaarPersistentGeheugen++
+
 	}
 }
 
@@ -358,6 +384,7 @@ public class main {
 	}
 
 	public static void doeTerminate() {
+		RAM.verwijderProcess(pid,processenlijst);
 		System.out.println("Ik doe terminate");
 	}
 

@@ -19,7 +19,6 @@ class Process {
 	List<TablePageEntry> pageTable;
 	int gealloceerd;
 	Set<Integer> framenummers = new HashSet<Integer>();
-	
 
 	public Process(int p) {
 		pid = p;

@@ -1,5 +1,6 @@
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -54,6 +55,32 @@ class Process {
 		//Stel lijst te klein, kiezen voor random idle frames weg te geven.
 		PriorityQueue<TablePageEntry> ATqueue = new PriorityQueue<TablePageEntry>(16, ATcomp);
 		
+		for(TablePageEntry tpe: pageTable) {
+			if(tpe.getPresentBit()==1) {
+				ATqueue.add(tpe);
+			}
+		}
+		int verwijderd=0;
+		int aantalOver=0;
+		for(int a=0;a<aantal;a++) {
+			if(!ATqueue.isEmpty()) {
+				ATqueue.peek().setPresentBit(0);
+				ATqueue.peek().setModifyBit(0);
+				framenummers.remove(ATqueue.peek().getFrameNummer());
+				vrijgekomenPlaatsen.add(ATqueue.peek().getFrameNummer());
+				ATqueue.remove();
+				verwijderd++;
+			}
+		}
+		aantalOver=aantal-verwijderd;
+		for(Integer i:framenummers) {
+			if(aantalOver>0) {
+				vrijgekomenPlaatsen.add(i);
+				framenummers.remove(i);
+				aantalOver--;
+			}
+			else {break;}
+		}
 		return vrijgekomenPlaatsen;
 		
 	}
@@ -208,14 +235,34 @@ class Ram {
 			processenIds.add(id);
 			List<Integer>lijst =processenlijst.get(pid).removeOutOfRam();
 			processenlijst.get(id).getInRam(lijst);
-		}
-		
-		else {
-			int teVerwijderenPerProcess = (12/aantalProc - 12/(aantalProc+1));
-			for(Integer i: processenIds) {
-				processenlijst.get(i).verwijderFrames(teVerwijderenPerProcess);
+			
+			for(Integer i:lijst) {
+				processen[i]=id;
 			}
 			
+		}
+		else if(aantalProc==0) {
+			List<Integer> alleFrames = new ArrayList<Integer>();
+			alleFrames.addAll(Arrays.asList(0,1, 2, 3, 4, 5,6,7,8,9,10,11));
+			processenlijst.get(id).getInRam(alleFrames);
+			for(int a=0;a<12;a++) {
+				processen[a]=id;
+			}
+			aantalProc++;
+		}
+		else {
+			List<Integer> vrijgekomenFrames = new ArrayList<Integer>();
+			int teVerwijderenPerProcess = (12/aantalProc - 12/(aantalProc+1));
+			for(Integer i: processenIds) {
+				vrijgekomenFrames.addAll(processenlijst.get(i).verwijderFrames(teVerwijderenPerProcess));
+				
+			}
+			for(Integer i:vrijgekomenFrames) {
+				processen[i]=id;
+			}
+			
+		processenlijst.get(id).getInRam(vrijgekomenFrames);
+		aantalProc++;	
 		}
 	}
 

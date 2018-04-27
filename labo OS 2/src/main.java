@@ -128,6 +128,7 @@ public class main extends Application {
 	}
 
 	public static void doeTerminate() {
+		RAM.verwijderProcess(pid,processenlijst);
 		System.out.println("Ik doe terminate");
 	}
 

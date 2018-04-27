@@ -94,8 +94,36 @@ class Instructie {
 
 }
 
-public class main {
+class Ram{
+	int aantalProc;
+	int[] processen;
+	
+	public Ram() {
+		processen = new int[12];
+		aantalProc=0;
+	}
 
+	public int getAantalProc() {
+		return aantalProc;
+	}
+
+	public void setAantalProc(int aantalProc) {
+		this.aantalProc = aantalProc;
+	}
+
+	public int[] getProcessen() {
+		return processen;
+	}
+
+	public void setProcessen(int[] processen) {
+		this.processen = processen;
+	}
+}
+
+public class main {
+	static Ram RAM = new Ram();
+	static List<Process> processenlijst = new ArrayList<Process>();
+	
 	public static void main(String[] args) {
 
 		int pid;
@@ -110,7 +138,7 @@ public class main {
 		functies.put("Write", () -> doeWrite());
 		functies.put("Terminate", () -> doeTerminate());
 
-		int[] RAM = new int[12];
+		
 
 		try {
 
@@ -140,7 +168,7 @@ public class main {
 					st = Integer.parseInt(eElement.getElementsByTagName("address").item(0).getTextContent());
 
 					p = new Instructie(pid, at, st);
-
+					instructielijst.add(p);
 					functies.get(at).run();
 				}
 			}
@@ -152,6 +180,7 @@ public class main {
 	}
 
 	public static void doeStart() {
+		LRUStart();
 		System.out.println("Ik doe start");
 	}
 
@@ -170,6 +199,11 @@ public class main {
 	public static void LRUStart() {
 		
 		System.out.println("LRU");
+		
+		if(RAM.getAantalProc()==0) {
+			
+		}
+		
 		/*
 		 * 4 processen in ram -> 1 proces verwijderen
 		 * => met laagste totale acces Time

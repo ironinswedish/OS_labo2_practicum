@@ -1,9 +1,11 @@
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -23,7 +25,6 @@ class Process {
 	public Process(int p) {
 		pid = p;
 		pageTable = new ArrayList<TablePageEntry>();
-		TablePageEntry t;
 		for (int a = 0; a < 15; a++) {
 			pageTable.add(new TablePageEntry());
 
@@ -42,6 +43,19 @@ class Process {
 			}
 		}
 		return max;
+	}
+	
+	public List<Integer> verwijderFrames(int aantal) {
+		List<Integer> vrijgekomenPlaatsen = new ArrayList<Integer>();
+		Comparator<TablePageEntry> ATcomp = new AccesTimeComparator();
+		
+		//Alle pageEntries die in het RAM zitten in de priorityqueue steken.
+		//Vervolgens de eerste 'aantal' pages van deze queue eruit halen
+		//Stel lijst te klein, kiezen voor random idle frames weg te geven.
+		PriorityQueue<TablePageEntry> ATqueue = new PriorityQueue<TablePageEntry>(16, ATcomp);
+		
+		return vrijgekomenPlaatsen;
+		
 	}
 	
 	public List<Integer> removeOutOfRam() {
@@ -65,6 +79,13 @@ class Process {
 		
 	}
 	
+}
+
+class AccesTimeComparator implements Comparator<TablePageEntry>{
+	@Override
+	public int compare(TablePageEntry o1, TablePageEntry o2) {
+		return o1.getLastAccesTime()-o2.getLastAccesTime();
+	}
 }
 
 class TablePageEntry {
@@ -187,6 +208,14 @@ class Ram {
 			processenIds.add(id);
 			List<Integer>lijst =processenlijst.get(pid).removeOutOfRam();
 			processenlijst.get(id).getInRam(lijst);
+		}
+		
+		else {
+			int teVerwijderenPerProcess = (12/aantalProc - 12/(aantalProc+1));
+			for(Integer i: processenIds) {
+				processenlijst.get(i).verwijderFrames(teVerwijderenPerProcess);
+			}
+			
 		}
 	}
 

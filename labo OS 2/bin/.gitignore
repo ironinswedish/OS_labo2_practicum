@@ -7,4 +7,9 @@
 /Ram.class
 /Ram$main.class
 /Ram$toestand.class
+<<<<<<< HEAD
 /ToestandController.class
+=======
+/ArrivalTimeComparator.class
+/AccesTimeComparator.class
+>>>>>>> refs/remotes/origin/master

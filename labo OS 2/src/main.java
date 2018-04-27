@@ -99,8 +99,36 @@ class toestand{
 	int shrijf;
 }
 
-public class main {
+class Ram{
+	int aantalProc;
+	int[] processen;
+	
+	public Ram() {
+		processen = new int[12];
+		aantalProc=0;
+	}
 
+	public int getAantalProc() {
+		return aantalProc;
+	}
+
+	public void setAantalProc(int aantalProc) {
+		this.aantalProc = aantalProc;
+	}
+
+	public int[] getProcessen() {
+		return processen;
+	}
+
+	public void setProcessen(int[] processen) {
+		this.processen = processen;
+	}
+}
+
+public class main {
+	static Ram RAM = new Ram();
+	static List<Process> processenlijst = new ArrayList<Process>();
+	
 	public static void main(String[] args) {
 
 		int pid;
@@ -145,7 +173,7 @@ public class main {
 					adres = Integer.parseInt(eElement.getElementsByTagName("address").item(0).getTextContent());
 
 					p = new Instructie(pid, at, adres);
-
+					instructielijst.add(p);
 					functies.get(at).run();
 				}
 			}

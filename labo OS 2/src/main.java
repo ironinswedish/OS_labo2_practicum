@@ -1,8 +1,10 @@
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -15,16 +17,53 @@ import org.w3c.dom.NodeList;
 class Process {
 	int pid;
 	List<TablePageEntry> pageTable;
+	int gealloceerd;
+	Set<Integer> framenummers = new HashSet<Integer>();
 
 	public Process(int p) {
 		pid = p;
 		pageTable = new ArrayList<TablePageEntry>();
-		TablePageEntry t;
 		for (int a = 0; a < 15; a++) {
 			pageTable.add(new TablePageEntry());
 
 		}
 	}
+
+	public void setGealloceerd(int a) {
+		gealloceerd = a;
+	}
+
+	public int getMaxAccesTime() {
+		int max = 0;
+		for (TablePageEntry tpe : pageTable) {
+			if (tpe.getLastAccesTime() > max && tpe.getPresentBit()==1) {
+				max=tpe.getLastAccesTime();
+			}
+		}
+		return max;
+	}
+	
+	public List<Integer> removeOutOfRam() {
+		List<Integer> lijst = new ArrayList<Integer>();
+		for(TablePageEntry tpe:pageTable) {
+			if(tpe.getFrameNummer()!=-1) {lijst.add(tpe.getFrameNummer());}
+			tpe.setFrameNummer(-1);
+			tpe.setPresentBit(0);
+			tpe.setModifyBit(0);
+			//SchrijfOpdrachtenVerhoogd
+		}
+		return lijst;
+	}
+
+	public void getInRam(List<Integer> lijst) {
+		framenummers = new HashSet<Integer>();
+		for(Integer i: lijst) {
+			framenummers.add(i);
+		}
+		
+		
+	}
+	
 }
 
 class TablePageEntry {
@@ -34,6 +73,8 @@ class TablePageEntry {
 	int frameNummer;
 
 	public TablePageEntry() {
+		frameNummer=-1;
+		lastAccesTime=-1;
 		presentBit = 0;
 		modifyBit = 0;
 	}
@@ -94,13 +135,31 @@ class Instructie {
 
 }
 
-class Ram{
+class Ram {
 	int aantalProc;
 	int[] processen;
-	
+	Set<Integer> processenIds = new HashSet<Integer>();
+
 	public Ram() {
 		processen = new int[12];
-		aantalProc=0;
+		aantalProc = 0;
+	}
+
+	public void nieuwProcess(int id, List<Process> processenlijst) {
+		if (aantalProc == 4) {
+			int laagsteClock = 100000000;
+			int pid = 0;
+			for (Integer i : processenIds) {
+				if(processenlijst.get(i).getMaxAccesTime()<laagsteClock) {
+					pid=i;
+					laagsteClock= processenlijst.get(i).getMaxAccesTime();
+				}
+			}
+			processenIds.remove(pid);
+			processenIds.add(id);
+			List<Integer>lijst =processenlijst.get(pid).removeOutOfRam();
+			processenlijst.get(id).getInRam(lijst);
+		}
 	}
 
 	public int getAantalProc() {
@@ -123,10 +182,10 @@ class Ram{
 public class main {
 	static Ram RAM = new Ram();
 	static List<Process> processenlijst = new ArrayList<Process>();
-	
+	static int pid = 0;
+
 	public static void main(String[] args) {
 
-		int pid;
 		String at;
 		int st;
 		Instructie p;
@@ -137,8 +196,6 @@ public class main {
 		functies.put("Read", () -> doeRead());
 		functies.put("Write", () -> doeWrite());
 		functies.put("Terminate", () -> doeTerminate());
-
-		
 
 		try {
 
@@ -180,6 +237,8 @@ public class main {
 	}
 
 	public static void doeStart() {
+		Process p = new Process(pid);
+		processenlijst.add(pid, p);
 		LRUStart();
 		System.out.println("Ik doe start");
 	}
@@ -197,47 +256,40 @@ public class main {
 	}
 
 	public static void LRUStart() {
-		
+
 		System.out.println("LRU");
-		
-		if(RAM.getAantalProc()==0) {
-			
-		}
-		
+
+		RAM.nieuwProcess(pid, processenlijst);
+
 		/*
-		 * 4 processen in ram -> 1 proces verwijderen
-		 * => met laagste totale acces Time
-		 * 0-3 processen 
-		 * => per proces de 2^(3-n) met laagste acces Time
+		 * 4 processen in ram -> 1 proces verwijderen => met laagste totale acces Time
+		 * 0-3 processen => per proces de 2^(3-n) met laagste acces Time
 		 */
-		int aantalProc = aantalProcInRam();
-		if(aantalProc==4){
-			LRULaagstTotaal();
-		}
-		else {
-			LRULaagsteFragments(aantalProc);
-		}
+
 	}
-	
-	public static void LRULaagstTotaal(){
+
+	public static void LRULaagstTotaal() {
 		/*
-		 * totale acces time van fragments in proces optellen -> gene met laagste vervangen
+		 * totale acces time van fragments in proces optellen -> gene met laagste
+		 * vervangen
 		 * 
 		 * 
 		 */
 	}
-	public static void LRULaagsteFragments(int aantalProc){
+
+	public static void LRULaagsteFragments(int aantalProc) {
 		/*
 		 * de 2^(3-n) fragments met laagste accesTime uit ram halen
 		 */
 	}
-	public static void LRUReadWrite(){
+
+	public static void LRUReadWrite() {
 		/*
 		 * fragment met laagste accesTime dat van proces zelf is
 		 */
 	}
 
-	public static int aantalProcInRam(){
+	public static int aantalProcInRam() {
 		return 1;
 	}
 }

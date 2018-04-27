@@ -19,10 +19,12 @@ class Process {
 	List<TablePageEntry> pageTable;
 	int gealloceerd;
 	Set<Integer> framenummers = new HashSet<Integer>();
+	
 
 	public Process(int p) {
 		pid = p;
 		pageTable = new ArrayList<TablePageEntry>();
+		TablePageEntry t;
 		for (int a = 0; a < 15; a++) {
 			pageTable.add(new TablePageEntry());
 
@@ -135,6 +137,33 @@ class Instructie {
 
 }
 
+class toestand{
+
+
+	int shrijfopdracht;
+	int clock;
+	String instructie;
+	int adres;
+	int reeelAdres;
+	int frame;
+	int offset;
+	Ram ram;
+	List<Process> aanwezigeProcessen;
+	
+	public toestand(int shrijfopdracht, int clock, String instructie, int adres, int reeelAdres, Ram ram,
+			List<Process> aanwezigeProcessen) {
+		this.shrijfopdracht = shrijfopdracht;
+		this.clock = clock;
+		this.instructie = instructie;
+		this.adres = adres;
+		this.reeelAdres = reeelAdres;
+		this.ram = ram;
+		this.aanwezigeProcessen = aanwezigeProcessen;
+	}
+	
+	
+}
+
 class Ram {
 	int aantalProc;
 	int[] processen;
@@ -182,12 +211,14 @@ class Ram {
 public class main {
 	static Ram RAM = new Ram();
 	static List<Process> processenlijst = new ArrayList<Process>();
+	static int clock;
+	static int adres;
+	static int schrijfopdracht;
 	static int pid = 0;
 
 	public static void main(String[] args) {
 
 		String at;
-		int st;
 		Instructie p;
 		List<Instructie> instructielijst = new ArrayList<Instructie>();
 
@@ -222,9 +253,9 @@ public class main {
 
 					pid = Integer.parseInt(eElement.getElementsByTagName("processID").item(0).getTextContent());
 					at = eElement.getElementsByTagName("operation").item(0).getTextContent();
-					st = Integer.parseInt(eElement.getElementsByTagName("address").item(0).getTextContent());
+					adres = Integer.parseInt(eElement.getElementsByTagName("address").item(0).getTextContent());
 
-					p = new Instructie(pid, at, st);
+					p = new Instructie(pid, at, adres);
 					instructielijst.add(p);
 					functies.get(at).run();
 				}

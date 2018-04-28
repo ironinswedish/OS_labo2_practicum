@@ -5,41 +5,45 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="560.0" prefWidth="907.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main">
+<AnchorPane prefHeight="1019.0" prefWidth="1476.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main">
    <children>
-      <Button layoutX="429.0" layoutY="63.0" mnemonicParsing="false" onAction="#vooruitEen" text="1 stap vooruit" />
-      <Button layoutX="427.0" layoutY="122.0" mnemonicParsing="false" onAction="#vooruitAlles" text="alles uitvoeren" />
-      <TableView layoutX="14.0" layoutY="52.0" prefHeight="279.0" prefWidth="403.0">
+      <Button layoutX="597.0" layoutY="107.0" mnemonicParsing="false" onAction="#vooruitEen" text="1 stap vooruit" />
+      <Button layoutX="595.0" layoutY="176.0" mnemonicParsing="false" onAction="#vooruitAlles" text="alles uitvoeren" />
+      <TableView fx:id="pageTable" layoutX="14.0" layoutY="108.0" prefHeight="513.0" prefWidth="505.0">
         <columns>
-          <TableColumn prefWidth="74.0" text="page nr." />
-          <TableColumn prefWidth="67.0" text="present" />
-            <TableColumn prefWidth="72.0" text="modify" />
-            <TableColumn prefWidth="101.0" text="acces time" />
-            <TableColumn prefWidth="88.0" text="frame nr." />
+          <TableColumn fx:id="pagenr" prefWidth="116.0" text="page nr." />
+          <TableColumn fx:id="present" text="present" />
+            <TableColumn fx:id="modify" prefWidth="78.0" text="modify" />
+            <TableColumn fx:id="acces" prefWidth="101.0" text="acces time" />
+            <TableColumn fx:id="framenr" prefWidth="129.0" text="frame nr." />
         </columns>
       </TableView>
-      <TableView layoutX="555.0" layoutY="52.0" prefHeight="279.0" prefWidth="293.0">
+      <TableView fx:id="ramTable" layoutX="837.0" layoutY="103.0" prefHeight="519.0" prefWidth="421.0">
         <columns>
-          <TableColumn prefWidth="75.0" text="frame nr." />
-          <TableColumn prefWidth="90.0" text="process id" />
-            <TableColumn prefWidth="125.0" text="page nr." />
+          <TableColumn fx:id="rframenr" prefWidth="143.0" text="frame nr." />
+          <TableColumn fx:id="rPid" prefWidth="148.0" text="process id" />
+            <TableColumn fx:id="rpagenr" prefWidth="129.0" text="page nr." />
         </columns>
       </TableView>
-      <Label layoutX="462.0" layoutY="205.0" text="Timer" />
-      <Label layoutX="460.0" layoutY="259.0" text="Schrijf" />
-      <Label layoutX="460.0" layoutY="232.0" prefHeight="21.0" prefWidth="41.0" text="tijd" />
-      <Label layoutX="97.0" layoutY="398.0" text="Proces" />
-      <Label layoutX="180.0" layoutY="398.0" text="instructie" />
-      <Label layoutX="262.0" layoutY="398.0" text="virtueel adres" />
-      <Label layoutX="392.0" layoutY="398.0" text="reëel adres" />
-      <Label layoutX="548.0" layoutY="398.0" text="frame" />
-      <Label layoutX="635.0" layoutY="398.0" text="offset" />
-      <Label layoutX="461.0" layoutY="294.0" prefHeight="21.0" prefWidth="41.0" text="sch" />
-      <Label layoutX="99.0" layoutY="439.0" prefHeight="21.0" prefWidth="41.0" text="proc" />
-      <Label layoutX="190.0" layoutY="439.0" prefHeight="21.0" prefWidth="41.0" text="ins" />
-      <Label layoutX="286.0" layoutY="440.0" prefHeight="21.0" prefWidth="41.0" text="v ad" />
-      <Label layoutX="407.0" layoutY="439.0" prefHeight="21.0" prefWidth="41.0" text="re ad" />
-      <Label layoutX="547.0" layoutY="439.0" prefHeight="21.0" prefWidth="41.0" text="fr" />
-      <Label layoutX="634.0" layoutY="439.0" prefHeight="21.0" prefWidth="41.0" text="offs" />
+      <Label layoutX="597.0" layoutY="229.0" text="Timer" />
+      <Label layoutX="675.0" layoutY="229.0" text="Schrijf" />
+      <Label fx:id="timer" layoutX="596.0" layoutY="273.0" prefHeight="21.0" prefWidth="41.0" text="tijd" />
+      <Label layoutX="509.0" layoutY="672.0" text="Proces" />
+      <Label layoutX="605.0" layoutY="672.0" text="instructie" />
+      <Label layoutX="711.0" layoutY="672.0" text="virtueel adres" />
+      <Label layoutX="988.0" layoutY="672.0" text="frame" />
+      <Label layoutX="1083.0" layoutY="672.0" text="offset" />
+      <Label fx:id="schrijf" layoutX="675.0" layoutY="273.0" prefHeight="21.0" prefWidth="41.0" text="sch" />
+      <Label fx:id="proces" layoutX="511.0" layoutY="734.0" prefHeight="21.0" prefWidth="41.0" text="proc" />
+      <Label fx:id="instructie" layoutX="597.0" layoutY="734.0" prefHeight="21.0" prefWidth="80.0" text="ins" />
+      <Label fx:id="hvAdres" layoutX="718.0" layoutY="734.0" prefHeight="21.0" prefWidth="41.0" text="v ad" />
+      <Label fx:id="hFrame" layoutX="987.0" layoutY="734.0" prefHeight="21.0" prefWidth="41.0" text="fr" />
+      <Label fx:id="hOffset" layoutX="1091.0" layoutY="734.0" prefHeight="21.0" prefWidth="41.0" text="offs" />
+      <Label fx:id="vFrame" layoutX="987.0" layoutY="790.0" text="vfr" />
+      <Label fx:id="vOffset" layoutX="1095.0" layoutY="790.0" text="voffs" />
+      <Label fx:id="vVAdres" layoutX="721.0" layoutY="790.0" text="vv ad" />
+      <Label layoutX="849.0" layoutY="672.0" text="reel adres" />
+      <Label layoutX="856.0" layoutY="734.0" text="r ad" />
+      <Label layoutX="850.0" layoutY="790.0" text="v r ad" />
    </children>
 </AnchorPane>

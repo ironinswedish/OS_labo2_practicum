@@ -114,6 +114,8 @@ public class main extends Application {
 	}
 
 	public static void leesEnVoerUit(String file) {
+		schrijfopdracht = 0;
+		verwijderopdracht = 0;
 		clock = 0;
 		instructielijst = new ArrayList<Instructie>();
 		processenlijst = new ArrayList<Process>();

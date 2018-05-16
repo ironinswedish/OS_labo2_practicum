@@ -34,12 +34,13 @@ public class main extends Application {
 	static List<Process> processenlijst = new ArrayList<Process>();
 	static int clock = 0;
 	static int adres;
-	static int schrijfopdracht;
+	static int schrijfopdracht = 0;
 	static int pid;
 	static ArrayList<Toestand> toestandenLijst = new ArrayList<Toestand>();
 	static List<Instructie> instructielijst = new ArrayList<Instructie>();
 	static int huidigeInst;
 	static int GUIstap = 0;
+	static int verwijderopdracht = 0;
 
 	@FXML
 	private Label timer;
@@ -61,6 +62,14 @@ public class main extends Application {
 	private Label vFrame;
 	@FXML
 	private Label vOffset;
+	@FXML
+	private Label verwijder;
+	@FXML
+	private Label totaal;
+	@FXML
+	private Label vRAdres;
+	@FXML
+	private Label hRAdres;
 
 	// pageTabel view
 	@FXML
@@ -87,6 +96,12 @@ public class main extends Application {
 
 	public static void main(String[] args) {
 
+		leesEnVoerUit("Instructions_30_3.xml");
+		launch(args);
+
+	}
+
+	public static void leesEnVoerUit(String file){
 		String at;
 		Instructie p;
 
@@ -98,7 +113,7 @@ public class main extends Application {
 
 		try {
 
-			File fXmlFile = new File("Instructions_30_3.xml");
+			File fXmlFile = new File(file);
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(fXmlFile);
@@ -131,22 +146,17 @@ public class main extends Application {
 
 			for (int i = 0; i < instructielijst.size(); i++) {
 				huidigeInst = i;
-				pid=instructielijst.get(i).pid;
+				pid = instructielijst.get(i).pid;
+				adres = instructielijst.get(i).adress;
 				functies.get(instructielijst.get(i).operation).run();
 				clock++;
-				
+
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		for(Process proc: processenlijst){
-			System.out.println(proc.pid);
-		}
-		launch(args);
-
 	}
-
 	@Override
 	public void start(Stage stage) throws Exception {
 		Parent root = FXMLLoader.load(getClass().getResource("Scheduling_User_Interface.fxml"));
@@ -161,38 +171,118 @@ public class main extends Application {
 	public void vooruitEen(ActionEvent event) {
 		if (GUIstap < toestandenLijst.size()) {
 			Toestand toestand = toestandenLijst.get(GUIstap);
-			timer.setText(String.valueOf(toestand.clock));
-			schrijf.setText(String.valueOf(toestand.shrijfopdracht));
-			proces.setText(String.valueOf(toestand.huidigProces.pid));
-			instructie.setText(String.valueOf(toestand.instructie));
-			hvAdres.setText(String.valueOf(toestand.huidigAdres));
-			hFrame.setText(String.valueOf(toestand.frame));
-			hOffset.setText(String.valueOf(toestand.offset));
-			vVAdres.setText(String.valueOf(toestand.volgendAdres));
-			vFrame.setText(String.valueOf(toestand.volgendFrame));
-			vOffset.setText(String.valueOf(toestand.volgendOffset));
-			setRamTable(toestand);
-			setPageTable(toestand);
+			setGUI(toestand);
 		}
 
 		GUIstap++;
 	}
 
 	public void vooruitAlles(ActionEvent event) {
-		System.out.println("test 2");
+		Toestand toestand = toestandenLijst.get(toestandenLijst.size() - 1);
+		setGUI(toestand);
+		GUIstap = toestandenLijst.size();
+	}
+	
+	public void andereFile(ActionEvent event){
+		System.out.println("andere");
+		String file="Instructions_20000_4.xml";
+		schrijfopdracht=0;
+		verwijderopdracht = 0;
+		leesEnVoerUit(file);
+		GUIstap=0;
+	}
+	public void laatsteFile(ActionEvent event){
+		System.out.println("laatste");
+		String file="Instructions_20000_20.xml";
+		schrijfopdracht=0;
+		verwijderopdracht = 0;
+		leesEnVoerUit(file);
+		GUIstap=0;
+	}
+	public void eersteFile(ActionEvent event){
+		System.out.println("eerste");
+		String file="Instructions_30_3.xml";
+		schrijfopdracht=0;
+		verwijderopdracht = 0;
+		leesEnVoerUit(file);
+		GUIstap=0;
+	}
+	public void setGUI(Toestand toestand) {
+		int writeRemove = toestand.shrijfopdracht + toestand.verwijderopdracht;
+		int volgendReeeladres;
+		int reeeladres;
+		if (toestand.frame == -1) {
+			reeeladres = 0;
+
+		} else {
+			reeeladres = toestand.frame * 4096 + toestand.offset;
+
+		}
+		if (toestand.volgendFrame == -1) {
+			volgendReeeladres = 0;
+		} else {
+			volgendReeeladres = toestand.volgendFrame * 4096 + toestand.volgendOffset;
+		}
+		timer.setText(String.valueOf(toestand.clock));
+		schrijf.setText(String.valueOf(toestand.shrijfopdracht));
+		verwijder.setText(String.valueOf(toestand.verwijderopdracht));
+		totaal.setText(String.valueOf(writeRemove));
+		proces.setText(String.valueOf(toestand.huidigProces.pid));
+		instructie.setText(String.valueOf(toestand.instructie));
+		hvAdres.setText(String.valueOf(toestand.huidigAdres));
+		hFrame.setText(String.valueOf(toestand.frame));
+		hOffset.setText(String.valueOf(toestand.offset));
+		vVAdres.setText(String.valueOf(toestand.volgendAdres));
+		vFrame.setText(String.valueOf(toestand.volgendFrame));
+		vOffset.setText(String.valueOf(toestand.volgendOffset));
+		hRAdres.setText(String.valueOf(reeeladres));
+		vRAdres.setText(String.valueOf(volgendReeeladres));
+		setRamTable(toestand);
+		setPageTable(toestand);
+	}
+
+	public static void voegToestandToe() {
+		Instructie inst = instructielijst.get(huidigeInst);
+		Set<Process> aanwezigeProc = new HashSet<Process>();
+		Toestand toestand = null;
+
+		for (int j = 0; j < RAM.processen.length; j++) {
+			if (RAM.processen[j] != -1) {
+				aanwezigeProc.add(processenlijst.get(RAM.processen[j]));
+			}
+		}
+
+		if (huidigeInst < instructielijst.size() - 1) {
+			toestand = new Toestand(schrijfopdracht, verwijderopdracht, clock, inst.operation, inst.adress,
+					instructielijst.get(huidigeInst + 1).adress, new Ram(RAM), aanwezigeProc,
+					new Process(processenlijst.get(inst.pid)), processenlijst);
+		} else {
+			toestand = new Toestand(schrijfopdracht, verwijderopdracht, clock, inst.operation, inst.adress, 0, RAM,
+					aanwezigeProc, new Process(processenlijst.get(inst.pid)), processenlijst);
+		}
+
+		toestandenLijst.add(toestand);
 	}
 
 	public void setRamTable(Toestand toestand) {
 		ramTable.getItems().clear();
 		Process p = null;
+		boolean inRam;
+
 		for (int z = 0; z < toestand.ram.processen.length; z++) {
+			inRam = false;
 			if (toestand.ram.processen[z] != -1) {
-				System.out.println(toestand.ram.processen[z]);
-				p = processenlijst.get(toestand.ram.processen[z]);
+				p = toestand.processenlijst.get(toestand.ram.processen[z]);
 				for (int d = 0; d < p.pageTable.size(); d++) {
 					if (p.pageTable.get(d).frameNummer == z) {
 						ramTable.getItems().add(new TabelEntry(d, z, p.pid));
+						inRam = true;
+						break;
 					}
+
+				}
+				if (!inRam) {
+					ramTable.getItems().add(new TabelEntry(-1, z, p.pid));
 				}
 
 			} else {
@@ -209,7 +299,8 @@ public class main extends Application {
 		pageTable.getItems().clear();
 		Process p = toestand.huidigProces;
 		for (int z = 0; z < p.pageTable.size(); z++) {
-				pageTable.getItems().add(new TabelEntry(z,p.pageTable.get(z).presentBit,p.pageTable.get(z).modifyBit,p.pageTable.get(z).lastAccesTime,p.pageTable.get(z).frameNummer));
+			pageTable.getItems().add(new TabelEntry(z, p.pageTable.get(z).presentBit, p.pageTable.get(z).modifyBit,
+					p.pageTable.get(z).lastAccesTime, p.pageTable.get(z).frameNummer));
 		}
 		framenr.setCellValueFactory(new PropertyValueFactory<>("frameNummer"));
 		pagenr.setCellValueFactory(new PropertyValueFactory<>("pageNummer"));
@@ -221,91 +312,102 @@ public class main extends Application {
 
 	public static void doeStart() {
 		Process p = new Process(pid);
-		System.out.println("procesid " +p.pid);
+		System.out.println("procesid " + p.pid);
 		processenlijst.add(pid, p);
-		LRUStart();
+		LRUStart(-1, false);
 		voegToestandToe();
 		System.out.println("Ik doe start");
 	}
 
 	public static void doeRead() {
-		System.out.println("Ik doe read");
+		int page = getPage(adres);
+		// we kijken of de page nog niet aanwezig is in het RAM geheugen
+		if (!processenlijst.get(pid).checkAanwezigFrame(page, false, clock)) {
+			// indien er nog geen page van dit proces in het RAM geheugen zit
+			// moet er plaats worden gemaakt
+			if (processenlijst.get(pid).framenummers.size() == 0) {
+				LRUStart(page, false);
+			} else {
+				LRUReadWrite(page, false);
+			}
+		}
+
+		voegToestandToe();
 	}
 
 	public static void doeWrite() {
 		System.out.println("Ik doe write");
+		int frame = getPage(adres);
+		if (!processenlijst.get(pid).checkAanwezigFrame(frame, true, clock)) {
+			
+			if (processenlijst.get(pid).framenummers.size() == 0) {
+				LRUStart(frame, true);
+			} else {
+				System.out.println("extra toevoegen "+ frame + " " + adres +" "+ pid);
+				LRUReadWrite(frame, true);
+			}
+		}
+
+		voegToestandToe();
 	}
 
 	public static void doeTerminate() {
 
 		RAM.verwijderProcess(pid, processenlijst);
+
 		voegToestandToe();
 		System.out.println("Ik doe terminate");
 	}
 
-	public static void LRUStart() {
+	public static void LRUStart(int page, boolean write) {
 
 		System.out.println("LRU");
 
 		RAM.nieuwProcess(pid, processenlijst);
+		System.out.println("verwijderopdracht 1 "+ verwijderopdracht);
+		verwijderopdracht = verwijderopdracht+RAM.verwijderOpdracht;
+		System.out.println("verwijderopdracht 2 "+ verwijderopdracht);
 
-		/*
-		 * 4 processen in ram -> 1 proces verwijderen => met laagste totale
-		 * acces Time 0-3 processen => per proces de 2^(3-n) met laagste acces
-		 * Time
-		 */
-
-	}
-
-	public static void voegToestandToe() {
-		Instructie inst = instructielijst.get(huidigeInst);
-		Set<Process> aanwezigeProc = new HashSet<Process>();
-		for (int j = 0; j < RAM.processen.length; j++) {
-			if (RAM.processen[j] != -1) {
-				aanwezigeProc.add(processenlijst.get(RAM.processen[j]));
-			}
+		int frame = RAM.getFrameFrom(pid);
+		if (page != -1) {
+			processenlijst.get(pid).useFrame(page, clock, write, frame);
+			schrijfopdracht++;
 		}
-		System.out.println(huidigeInst);
-		System.out.println(inst.pid);
-		System.out.println( processenlijst.get(inst.pid).pid);
-		Toestand toestand = null;
-		if (huidigeInst < instructielijst.size() - 1) {
-			toestand = new Toestand(0, clock, inst.operation, inst.adress, instructielijst.get(huidigeInst + 1).adress,
-					new Ram(RAM), aanwezigeProc, processenlijst.get(inst.pid));
-		} else {
-			toestand = new Toestand(0, clock, inst.operation, inst.adress, 0, RAM, aanwezigeProc,
-					processenlijst.get(inst.pid));
-		}
-		toestandenLijst.add(toestand);
+
+
+
 	}
 
-	public static void LRULaagstTotaal() {
-		/*
-		 * totale acces time van fragments in proces optellen -> gene met
-		 * laagste vervangen
-		 * 
-		 * 
-		 */
-	}
-
-	public static void LRULaagsteFragments(int aantalProc) {
-		/*
-		 * de 2^(3-n) fragments met laagste accesTime uit ram halen
-		 */
-	}
-
-	public static void LRUReadWrite() {
+	public static void LRUReadWrite(int page, boolean write) {
 		/*
 		 * fragment met laagste accesTime dat van proces zelf is
 		 */
+
+		processenlijst.get(pid).vervangLU(page, write, clock);
+		System.out.println("page is " + page);
+		verwijderopdracht =verwijderopdracht+ processenlijst.get(pid).verwijderOpdracht;
+		System.out.println("LRU");
+		schrijfopdracht++;
+
+
 	}
 
-	public static int aantalProcInRam() {
-		return 1;
+	public static void printFrames() {
+		for (Process process : processenlijst) {
+			System.out.println("Process id: " + process.pid);
+			process.printFramenummers();
+			System.out.println();
+		}
+		System.out.println();
 	}
+
+	public static int getPage(int st) {
+		double temp = (double) st / 4096;
+		// indien makkelijker-> veranderen
+		int temp2 = st / 4096;
+		double offset = (temp - (double) temp2) * 4096;
+
+		return temp2;
+	}
+
 }
-
-
-
-
-

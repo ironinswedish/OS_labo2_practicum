@@ -18,6 +18,28 @@ class TablePageEntry {
 		lastAccesTime = l;
 		frameNummer = f;
 	}
+	
+	public TablePageEntry(TablePageEntry p){
+		presentBit=p.presentBit;
+		modifyBit = p.modifyBit;
+		lastAccesTime=p.lastAccesTime;
+		frameNummer = p.frameNummer;
+	}
+
+	public void setTableEntry(int clock, boolean write, int frame) {
+		presentBit = 1;
+		lastAccesTime = clock;
+		frameNummer = frame;
+		if (write)
+			modifyBit = 1;
+		else
+			modifyBit = 0;
+	}
+
+	public void printEntry() {
+		System.out.print("presentbit: " + presentBit + " modifybit: " + modifyBit + " framenummer:" + frameNummer
+				+ " la: " + lastAccesTime);
+	}
 
 	public int getPresentBit() {
 		return presentBit;

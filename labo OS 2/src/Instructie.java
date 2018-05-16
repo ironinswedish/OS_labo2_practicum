@@ -1,5 +1,3 @@
-
-
 class Instructie {
 	String operation;
 	int pid;
@@ -12,6 +10,14 @@ class Instructie {
 		pid = a;
 		operation = o;
 		adress = b;
+	}
+
+	public int getPid() {
+		return pid;
+	}
+
+	public int getAdress() {
+		return adress;
 	}
 
 }

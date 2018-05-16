@@ -9,7 +9,7 @@
    <children>
       <Button layoutX="597.0" layoutY="107.0" mnemonicParsing="false" onAction="#vooruitEen" text="1 stap vooruit" />
       <Button layoutX="595.0" layoutY="176.0" mnemonicParsing="false" onAction="#vooruitAlles" text="alles uitvoeren" />
-      <TableView fx:id="pageTable" layoutX="14.0" layoutY="108.0" prefHeight="513.0" prefWidth="505.0">
+      <TableView fx:id="pageTable" layoutX="14.0" layoutY="108.0" prefHeight="513.0" prefWidth="505.0" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="30.0">
         <columns>
           <TableColumn fx:id="pagenr" prefWidth="116.0" text="page nr." />
           <TableColumn fx:id="present" text="present" />
@@ -18,7 +18,7 @@
             <TableColumn fx:id="framenr" prefWidth="129.0" text="frame nr." />
         </columns>
       </TableView>
-      <TableView fx:id="ramTable" layoutX="837.0" layoutY="103.0" prefHeight="519.0" prefWidth="421.0">
+      <TableView fx:id="ramTable" layoutX="837.0" layoutY="103.0" prefHeight="519.0" prefWidth="421.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="30.0">
         <columns>
           <TableColumn fx:id="rframenr" prefWidth="143.0" text="frame nr." />
           <TableColumn fx:id="rPid" prefWidth="148.0" text="process id" />
@@ -43,7 +43,14 @@
       <Label fx:id="vOffset" layoutX="1095.0" layoutY="790.0" text="voffs" />
       <Label fx:id="vVAdres" layoutX="721.0" layoutY="790.0" text="vv ad" />
       <Label layoutX="849.0" layoutY="672.0" text="reel adres" />
-      <Label layoutX="856.0" layoutY="734.0" text="r ad" />
-      <Label layoutX="850.0" layoutY="790.0" text="v r ad" />
+      <Label fx:id="hRAdres" layoutX="856.0" layoutY="734.0" text="r ad" />
+      <Label fx:id="vRAdres" layoutX="850.0" layoutY="790.0" text="v r ad" />
+      <Label layoutX="665.0" layoutY="323.0" text="verwijder" />
+      <Label fx:id="verwijder" layoutX="678.0" layoutY="365.0" text="le" />
+      <Label layoutX="673.0" layoutY="403.0" text="totaal" />
+      <Label fx:id="totaal" layoutX="675.0" layoutY="448.0" text="tot" />
+      <Button layoutX="64.0" layoutY="703.0" mnemonicParsing="false" onAction="#eersteFile" text="30_3" />
+      <Button layoutX="169.0" layoutY="703.0" mnemonicParsing="false" onAction="#andereFile" text="20000_4" />
+      <Button layoutX="300.0" layoutY="703.0" mnemonicParsing="false" onAction="#laatsteFile" text="20000_20" />
    </children>
 </AnchorPane>

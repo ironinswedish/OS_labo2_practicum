@@ -1,8 +1,11 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 class Toestand {
-
+	ArrayList<Process> processenlijst;
 	int shrijfopdracht;
+	int verwijderopdracht;
 	int clock;
 	String instructie;
 	int huidigAdres;
@@ -21,20 +24,31 @@ class Toestand {
 
 	}
 
-	public Toestand(int shrijfopdracht, int clock, String instr, int hAdres, int vAdres, Ram ram,
-			Set<Process> aanwezigeProcessen, Process hp) {
+	public Toestand(int shrijfopdracht, int verwijderopdracht, int clock, String instr, int hAdres, int vAdres, Ram ram,
+			Set<Process> aanwezigeProcessen, Process hp, List<Process> proclijst) {
 		this.shrijfopdracht = shrijfopdracht;
+		this.verwijderopdracht = verwijderopdracht;
 		this.clock = clock;
 		this.huidigAdres = hAdres;
 		this.instructie = instr;
-		this.frame = (int) Math.floor(hAdres / Math.pow(2, 12));
-		this.offset = (int) (((hAdres / Math.pow(2, 12)) - frame) * Math.pow(2, 12));
+		int pagenumber = (int) Math.floor(hAdres / Math.pow(2, 12));
+		int volgendPagenumber = (int) Math.floor(vAdres / Math.pow(2, 12));
+
+		this.frame = hp.pageTable.get((int) Math.floor(hAdres / Math.pow(2, 12))).frameNummer;
+		this.offset = (int) (((hAdres / Math.pow(2, 12)) - pagenumber) * Math.pow(2, 12));
+
 		this.volgendAdres = vAdres;
-		this.volgendFrame = (int) Math.floor(vAdres / Math.pow(2, 12));
-		this.volgendOffset = (int) (((vAdres / Math.pow(2, 12)) - volgendFrame) * Math.pow(2, 12));
+
+		this.volgendFrame = hp.pageTable.get((int) Math.floor(vAdres / Math.pow(2, 12))).frameNummer;
+		this.volgendOffset = (int) (((vAdres / Math.pow(2, 12)) - volgendPagenumber) * Math.pow(2, 12));
+
 		this.ram = ram;
 		this.aanwezigeProcessen = aanwezigeProcessen;
 		this.huidigProces = hp;
+		this.processenlijst = new ArrayList<Process>();
+		for (int i = 0; i < proclijst.size(); i++) {
+			processenlijst.add(new Process(proclijst.get(i)));
+		}
 	}
 
 	public int getShrijfopdracht() {
@@ -126,4 +140,3 @@ class Toestand {
 	}
 
 }
-

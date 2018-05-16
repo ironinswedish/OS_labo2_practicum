@@ -153,7 +153,9 @@ class Process {
 			}
 			pageTable.get(index).setPresentBit(0);
 			pageTable.get(index).setModifyBit(0);
+			
 			int frame = pageTable.get(index).getFrameNummer();
+			pageTable.get(index).setFrameNummer(-1);
 			useFrame(page, clock, write, frame);
 			
 			verwijderOpdracht++;

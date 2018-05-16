@@ -5,9 +5,9 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="1019.0" prefWidth="1476.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main">
+<AnchorPane prefHeight="1000.0" prefWidth="1500.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main">
    <children>
-      <Button layoutX="597.0" layoutY="107.0" mnemonicParsing="false" onAction="#vooruitEen" text="1 stap vooruit" />
+      <Button layoutX="716.0" layoutY="59.0" mnemonicParsing="false" onAction="#vooruitEen" text="1 stap vooruit" />
       <Button layoutX="595.0" layoutY="176.0" mnemonicParsing="false" onAction="#vooruitAlles" text="alles uitvoeren" />
       <TableView fx:id="pageTable" layoutX="14.0" layoutY="108.0" prefHeight="513.0" prefWidth="505.0" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="30.0">
         <columns>

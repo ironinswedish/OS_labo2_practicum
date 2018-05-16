@@ -22,6 +22,14 @@ class Process {
 		}
 	}
 	
+	public Process(){
+		pid =-1;
+		pageTable = new ArrayList<TablePageEntry>();
+		for (int a = 0; a < 16; a++) {
+			pageTable.add(new TablePageEntry());
+		}
+	}
+	
 	public Process(Process p){
 		pid =p.pid;
 		
@@ -31,7 +39,7 @@ class Process {
 		for (int a = 0; a < 16; a++) {
 			pageTable.add(new TablePageEntry(p.pageTable.get(a)));
 		}
-		System.out.println("test");
+		
 	}
 
 	public void printFramenummers() {

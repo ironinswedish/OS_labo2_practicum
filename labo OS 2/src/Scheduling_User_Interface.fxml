@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
@@ -7,8 +8,8 @@
 
 <AnchorPane prefHeight="1000.0" prefWidth="1500.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main">
    <children>
-      <Button layoutX="716.0" layoutY="59.0" mnemonicParsing="false" onAction="#vooruitEen" text="1 stap vooruit" />
-      <Button layoutX="595.0" layoutY="176.0" mnemonicParsing="false" onAction="#vooruitAlles" text="alles uitvoeren" />
+      <Button layoutX="581.0" layoutY="60.0" mnemonicParsing="false" onAction="#vooruitEen" text="1 stap vooruit" AnchorPane.topAnchor="60.0" />
+      <Button layoutX="901.0" layoutY="60.0" mnemonicParsing="false" onAction="#vooruitAlles" text="alles uitvoeren" AnchorPane.topAnchor="60.0" />
       <TableView fx:id="pageTable" layoutX="14.0" layoutY="108.0" prefHeight="513.0" prefWidth="505.0" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="30.0">
         <columns>
           <TableColumn fx:id="pagenr" prefWidth="116.0" text="page nr." />
@@ -25,32 +26,38 @@
             <TableColumn fx:id="rpagenr" prefWidth="129.0" text="page nr." />
         </columns>
       </TableView>
-      <Label layoutX="597.0" layoutY="229.0" text="Timer" />
-      <Label layoutX="675.0" layoutY="229.0" text="Schrijf" />
-      <Label fx:id="timer" layoutX="596.0" layoutY="273.0" prefHeight="21.0" prefWidth="41.0" text="tijd" />
-      <Label layoutX="509.0" layoutY="672.0" text="Proces" />
-      <Label layoutX="605.0" layoutY="672.0" text="instructie" />
-      <Label layoutX="711.0" layoutY="672.0" text="virtueel adres" />
-      <Label layoutX="988.0" layoutY="672.0" text="frame" />
-      <Label layoutX="1083.0" layoutY="672.0" text="offset" />
-      <Label fx:id="schrijf" layoutX="675.0" layoutY="273.0" prefHeight="21.0" prefWidth="41.0" text="sch" />
-      <Label fx:id="proces" layoutX="511.0" layoutY="734.0" prefHeight="21.0" prefWidth="41.0" text="proc" />
-      <Label fx:id="instructie" layoutX="597.0" layoutY="734.0" prefHeight="21.0" prefWidth="80.0" text="ins" />
-      <Label fx:id="hvAdres" layoutX="718.0" layoutY="734.0" prefHeight="21.0" prefWidth="41.0" text="v ad" />
-      <Label fx:id="hFrame" layoutX="987.0" layoutY="734.0" prefHeight="21.0" prefWidth="41.0" text="fr" />
-      <Label fx:id="hOffset" layoutX="1091.0" layoutY="734.0" prefHeight="21.0" prefWidth="41.0" text="offs" />
-      <Label fx:id="vFrame" layoutX="987.0" layoutY="790.0" text="vfr" />
-      <Label fx:id="vOffset" layoutX="1095.0" layoutY="790.0" text="voffs" />
-      <Label fx:id="vVAdres" layoutX="721.0" layoutY="790.0" text="vv ad" />
-      <Label layoutX="849.0" layoutY="672.0" text="reel adres" />
-      <Label fx:id="hRAdres" layoutX="856.0" layoutY="734.0" text="r ad" />
-      <Label fx:id="vRAdres" layoutX="850.0" layoutY="790.0" text="v r ad" />
-      <Label layoutX="665.0" layoutY="323.0" text="verwijder" />
-      <Label fx:id="verwijder" layoutX="678.0" layoutY="365.0" text="le" />
-      <Label layoutX="673.0" layoutY="403.0" text="totaal" />
-      <Label fx:id="totaal" layoutX="675.0" layoutY="448.0" text="tot" />
-      <Button layoutX="64.0" layoutY="703.0" mnemonicParsing="false" onAction="#eersteFile" text="30_3" />
-      <Button layoutX="169.0" layoutY="703.0" mnemonicParsing="false" onAction="#andereFile" text="20000_4" />
-      <Button layoutX="300.0" layoutY="703.0" mnemonicParsing="false" onAction="#laatsteFile" text="20000_20" />
+      <Label layoutX="610.0" layoutY="229.0" text="Timer" />
+      <Label layoutX="701.0" layoutY="229.0" text="Schrijf" />
+      <Label fx:id="timer" layoutX="609.0" layoutY="273.0" prefHeight="21.0" prefWidth="41.0" text="tijd" />
+      <Label layoutX="510.0" layoutY="607.0" text="Proces" />
+      <Label layoutX="599.0" layoutY="607.0" text="instructie" />
+      <Label layoutX="712.0" layoutY="607.0" text="virtueel adres" />
+      <Label layoutX="949.0" layoutY="607.0" text="frame" />
+      <Label layoutX="1028.0" layoutY="607.0" text="offset" />
+      <Label fx:id="schrijf" layoutX="701.0" layoutY="273.0" prefHeight="21.0" prefWidth="41.0" text="sch" />
+      <Label fx:id="proces" layoutX="510.0" layoutY="647.0" prefHeight="21.0" prefWidth="41.0" text="proc" />
+      <Label fx:id="instructie" layoutX="597.0" layoutY="647.0" prefHeight="21.0" prefWidth="80.0" text="ins" />
+      <Label fx:id="hvAdres" layoutX="712.0" layoutY="647.0" prefHeight="21.0" prefWidth="41.0" text="v ad" />
+      <Label fx:id="hFrame" layoutX="948.0" layoutY="647.0" prefHeight="21.0" prefWidth="41.0" text="fr" />
+      <Label fx:id="hOffset" layoutX="1029.0" layoutY="647.0" prefHeight="21.0" prefWidth="41.0" text="offs" />
+      <Label fx:id="vFrame" layoutX="950.0" layoutY="688.0" text="vfr" />
+      <Label fx:id="vOffset" layoutX="1031.0" layoutY="688.0" text="voffs" />
+      <Label fx:id="vVAdres" layoutX="715.0" layoutY="688.0" text="vv ad" />
+      <Label layoutX="848.0" layoutY="607.0" text="reel adres" />
+      <Label fx:id="hRAdres" layoutX="848.0" layoutY="647.0" text="r ad" />
+      <Label fx:id="vRAdres" layoutX="842.0" layoutY="688.0" text="v r ad" />
+      <Label layoutX="819.0" layoutY="229.0" text="verwijder" />
+      <Label fx:id="verwijder" layoutX="819.0" layoutY="273.0" text="le" />
+      <Label layoutX="949.0" layoutY="229.0" text="totaal" />
+      <Label fx:id="totaal" layoutX="949.0" layoutY="273.0" text="tot" />
+      <Button layoutX="111.0" layoutY="642.0" mnemonicParsing="false" onAction="#eersteFile" text="30_3" />
+      <Button layoutX="200.0" layoutY="642.0" mnemonicParsing="false" onAction="#andereFile" text="20000_4" />
+      <Button layoutX="314.0" layoutY="642.0" mnemonicParsing="false" onAction="#laatsteFile" text="20000_20" />
+      <Button layoutX="750.0" layoutY="60.0" mnemonicParsing="false" onAction="#achteruitEen" text="1 stap terug" />
+      <Label fx:id="vProces" layoutX="510.0" layoutY="688.0" text="vproc" />
+      <Label fx:id="vInstructie" layoutX="599.0" layoutY="688.0" text="vins" />
+      <Label layoutX="211.0" layoutY="562.0" text="PageTable van proces: " />
+      <Label fx:id="proces2" layoutX="368.0" layoutY="562.0" prefHeight="21.0" prefWidth="41.0" text="proc" />
+      <Label layoutX="1242.0" layoutY="573.0" text="RAM" />
    </children>
 </AnchorPane>

@@ -30,6 +30,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 public class main extends Application {
+	static String getFrom;
 	static Ram RAM = new Ram();
 	static List<Process> processenlijst = new ArrayList<Process>();
 	static int clock = 0;
@@ -37,6 +38,9 @@ public class main extends Application {
 	static int schrijfopdracht = 0;
 	static int pid;
 	static ArrayList<Toestand> toestandenLijst = new ArrayList<Toestand>();
+	static ArrayList<Toestand> toestandenLijst1 = new ArrayList<Toestand>();
+	static ArrayList<Toestand> toestandenLijst2 = new ArrayList<Toestand>();
+	static ArrayList<Toestand> toestandenLijst3 = new ArrayList<Toestand>();
 	static List<Instructie> instructielijst = new ArrayList<Instructie>();
 	static int huidigeInst;
 	static int GUIstap = 0;
@@ -48,6 +52,8 @@ public class main extends Application {
 	private Label schrijf;
 	@FXML
 	private Label proces;
+	@FXML
+	private Label proces2;
 	@FXML
 	private Label instructie;
 	@FXML
@@ -70,6 +76,10 @@ public class main extends Application {
 	private Label vRAdres;
 	@FXML
 	private Label hRAdres;
+	@FXML
+	private Label vProces;
+	@FXML
+	private Label vInstructie;
 
 	// pageTabel view
 	@FXML
@@ -97,13 +107,20 @@ public class main extends Application {
 	public static void main(String[] args) {
 
 		leesEnVoerUit("Instructions_30_3.xml");
+		leesEnVoerUit("Instructions_20000_4.xml");
+		leesEnVoerUit("Instructions_20000_20.xml");
 		launch(args);
 
 	}
 
-	public static void leesEnVoerUit(String file){
+	public static void leesEnVoerUit(String file) {
+		clock = 0;
+		instructielijst = new ArrayList<Instructie>();
+		processenlijst = new ArrayList<Process>();
+		RAM = new Ram();
 		String at;
 		Instructie p;
+		getFrom = file;
 
 		Map<String, Runnable> functies = new HashMap<String, Runnable>();
 		functies.put("Start", () -> doeStart());
@@ -157,14 +174,16 @@ public class main extends Application {
 			e.printStackTrace();
 		}
 	}
+
 	@Override
 	public void start(Stage stage) throws Exception {
 		Parent root = FXMLLoader.load(getClass().getResource("Scheduling_User_Interface.fxml"));
 
-		Scene scene = new Scene(root, 300, 275);
+		Scene scene = new Scene(root, 1500, 1000);
 
 		stage.setTitle("FXML Welcome");
 		stage.setScene(scene);
+		// stage.setFullScreen(true);
 		stage.show();
 	}
 
@@ -177,36 +196,53 @@ public class main extends Application {
 		GUIstap++;
 	}
 
+	public void achteruitEen(ActionEvent event) {
+		GUIstap--;
+		if (GUIstap < toestandenLijst.size() && GUIstap > -1) {
+			Toestand toestand = toestandenLijst.get(GUIstap);
+			setGUI(toestand);
+		}
+	}
+
 	public void vooruitAlles(ActionEvent event) {
 		Toestand toestand = toestandenLijst.get(toestandenLijst.size() - 1);
 		setGUI(toestand);
 		GUIstap = toestandenLijst.size();
 	}
-	
-	public void andereFile(ActionEvent event){
+
+	public void andereFile(ActionEvent event) {
 		System.out.println("andere");
-		String file="Instructions_20000_4.xml";
-		schrijfopdracht=0;
+		String file = "Instructions_20000_4.xml";
+		schrijfopdracht = 0;
 		verwijderopdracht = 0;
-		leesEnVoerUit(file);
-		GUIstap=0;
+		//leesEnVoerUit(file);
+		GUIstap = 0;
+		toestandenLijst=toestandenLijst2;
+		vooruitEen(new ActionEvent());
 	}
-	public void laatsteFile(ActionEvent event){
+
+	public void laatsteFile(ActionEvent event) {
 		System.out.println("laatste");
-		String file="Instructions_20000_20.xml";
-		schrijfopdracht=0;
+		String file = "Instructions_20000_20.xml";
+		schrijfopdracht = 0;
 		verwijderopdracht = 0;
-		leesEnVoerUit(file);
-		GUIstap=0;
+	//	leesEnVoerUit(file);
+		GUIstap = 0;
+		toestandenLijst=toestandenLijst3;
+		vooruitEen(new ActionEvent());
 	}
-	public void eersteFile(ActionEvent event){
+
+	public void eersteFile(ActionEvent event) {
 		System.out.println("eerste");
-		String file="Instructions_30_3.xml";
-		schrijfopdracht=0;
+		String file = "Instructions_30_3.xml";
+		schrijfopdracht = 0;
 		verwijderopdracht = 0;
-		leesEnVoerUit(file);
-		GUIstap=0;
+	//	leesEnVoerUit(file);
+		GUIstap = 0;
+		toestandenLijst=toestandenLijst1;
+		vooruitEen(new ActionEvent());
 	}
+
 	public void setGUI(Toestand toestand) {
 		int writeRemove = toestand.shrijfopdracht + toestand.verwijderopdracht;
 		int volgendReeeladres;
@@ -228,6 +264,7 @@ public class main extends Application {
 		verwijder.setText(String.valueOf(toestand.verwijderopdracht));
 		totaal.setText(String.valueOf(writeRemove));
 		proces.setText(String.valueOf(toestand.huidigProces.pid));
+		proces2.setText(String.valueOf(toestand.huidigProces.pid));
 		instructie.setText(String.valueOf(toestand.instructie));
 		hvAdres.setText(String.valueOf(toestand.huidigAdres));
 		hFrame.setText(String.valueOf(toestand.frame));
@@ -237,12 +274,16 @@ public class main extends Application {
 		vOffset.setText(String.valueOf(toestand.volgendOffset));
 		hRAdres.setText(String.valueOf(reeeladres));
 		vRAdres.setText(String.valueOf(volgendReeeladres));
+		vProces.setText(String.valueOf(toestand.volgendProces));
+		vInstructie.setText(String.valueOf(toestand.vOperatie));
 		setRamTable(toestand);
 		setPageTable(toestand);
 	}
 
 	public static void voegToestandToe() {
+
 		Instructie inst = instructielijst.get(huidigeInst);
+
 		Set<Process> aanwezigeProc = new HashSet<Process>();
 		Toestand toestand = null;
 
@@ -253,15 +294,22 @@ public class main extends Application {
 		}
 
 		if (huidigeInst < instructielijst.size() - 1) {
+			Instructie vInst = instructielijst.get(huidigeInst + 1);
 			toestand = new Toestand(schrijfopdracht, verwijderopdracht, clock, inst.operation, inst.adress,
-					instructielijst.get(huidigeInst + 1).adress, new Ram(RAM), aanwezigeProc,
-					new Process(processenlijst.get(inst.pid)), processenlijst);
+					vInst.adress, new Ram(RAM), aanwezigeProc, new Process(processenlijst.get(inst.pid)),
+					processenlijst, vInst.operation, vInst.pid);
 		} else {
 			toestand = new Toestand(schrijfopdracht, verwijderopdracht, clock, inst.operation, inst.adress, 0, RAM,
-					aanwezigeProc, new Process(processenlijst.get(inst.pid)), processenlijst);
+					aanwezigeProc, new Process(processenlijst.get(inst.pid)), processenlijst, "X", -1);
 		}
-
-		toestandenLijst.add(toestand);
+		if (getFrom.equals("Instructions_30_3.xml")) {
+			toestandenLijst1.add(toestand);
+		}else if (getFrom.equals("Instructions_20000_4.xml")){
+			toestandenLijst2.add(toestand);
+		}else{
+			toestandenLijst3.add(toestand);
+		}
+		
 	}
 
 	public void setRamTable(Toestand toestand) {
@@ -339,11 +387,11 @@ public class main extends Application {
 		System.out.println("Ik doe write");
 		int frame = getPage(adres);
 		if (!processenlijst.get(pid).checkAanwezigFrame(frame, true, clock)) {
-			
+
 			if (processenlijst.get(pid).framenummers.size() == 0) {
 				LRUStart(frame, true);
 			} else {
-				System.out.println("extra toevoegen "+ frame + " " + adres +" "+ pid);
+				System.out.println("extra toevoegen " + frame + " " + adres + " " + pid);
 				LRUReadWrite(frame, true);
 			}
 		}
@@ -364,17 +412,15 @@ public class main extends Application {
 		System.out.println("LRU");
 
 		RAM.nieuwProcess(pid, processenlijst);
-		System.out.println("verwijderopdracht 1 "+ verwijderopdracht);
-		verwijderopdracht = verwijderopdracht+RAM.verwijderOpdracht;
-		System.out.println("verwijderopdracht 2 "+ verwijderopdracht);
+		System.out.println("verwijderopdracht 1 " + verwijderopdracht);
+		verwijderopdracht = verwijderopdracht + RAM.verwijderOpdracht;
+		System.out.println("verwijderopdracht 2 " + verwijderopdracht);
 
 		int frame = RAM.getFrameFrom(pid);
 		if (page != -1) {
 			processenlijst.get(pid).useFrame(page, clock, write, frame);
 			schrijfopdracht++;
 		}
-
-
 
 	}
 
@@ -385,10 +431,9 @@ public class main extends Application {
 
 		processenlijst.get(pid).vervangLU(page, write, clock);
 		System.out.println("page is " + page);
-		verwijderopdracht =verwijderopdracht+ processenlijst.get(pid).verwijderOpdracht;
+		verwijderopdracht = verwijderopdracht + processenlijst.get(pid).verwijderOpdracht;
 		System.out.println("LRU");
 		schrijfopdracht++;
-
 
 	}
 
